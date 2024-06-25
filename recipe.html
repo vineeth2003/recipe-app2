@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="recipe.css" />
+    <style>
+        .recipe { margin-bottom: 20px; }
+        label { display: block; margin-top: 10px; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Recipe Book App</h1>
+    </header>
+
+    <div class="container">
+      <ul id="recipe-list" class="recipe-list">
+         <li class="recipe-item">
+          <img
+            src="https://spoonacular.com/recipeImages/12345-312x231.jpg"
+            alt="Recipe 1"
+          />
+          <h2>Recipe 1</h2>
+          <p>
+            <strong>Ingredients:</strong> Ingredient 1, Ingredient 2, Ingredient
+            3
+          </p>
+          <a href="#">View Recipe</a>
+        </li>
+        <li class="recipe-item">
+          <img
+            src="https://spoonacular.com/recipeImages/12545-312x231.jpg"
+            alt="Recipe 2"
+          />
+          <h2>Recipe 2</h2>
+          <p>
+            <strong>Ingredients:</strong> Ingredient 1, Ingredient 2, Ingredient
+            3
+          </p>
+          <a href="#">View Recipe</a>
+        </li>
+        <li class="recipe-item">
+          <img
+            src="https://spoonacular.com/recipeImages/12445-312x231.jpg"
+            alt="Recipe 3"
+          />
+          <h2>Recipe 3</h2>
+          <p>
+            <strong>Ingredients:</strong> Ingredient 1, Ingredient 2, Ingredient
+            3
+          </p>
+          <a href="#">View Recipe</a>
+        </li> -->
+      </ul>
+    </div>
+    <h1>Recipe Manager</h1>
+    <form id="recipeForm">
+        <div id="recipesContainer">
+            <!-- This will hold dynamically added recipe inputs -->
+        </div>
+        
+        <button type="button" id="addRecipe">Add Recipe</button>
+        <button type="submit">Submit Recipes</button>
+    </form>
+
+    <h2>Saved Recipes</h2>
+    <div id="savedRecipesContainer"></div>
+
+    <script>
+         let recipeCount = 0;
+
+function addRecipe() {
+    recipeCount++;
+    const recipeDiv = document.createElement('div');
+    recipeDiv.classList.add('recipe');
+    recipeDiv.innerHTML = `
+        <h3>Recipe ${recipeCount}</h3>
+        <label for="recipeName${recipeCount}">Name:</label>
+        <input type="text" id="recipeName${recipeCount}" name="recipeName${recipeCount}" required>
+        
+        <label for="ingredients${recipeCount}">Ingredients:</label>
+        <textarea id="ingredients${recipeCount}" name="ingredients${recipeCount}" rows="4" required></textarea>
+        
+        <label for="instructions${recipeCount}">Instructions:</label>
+        <textarea id="instructions${recipeCount}" name="instructions${recipeCount}" rows="4" required></textarea>
+    `;
+    document.getElementById('recipesContainer').appendChild(recipeDiv);
+}
+
+function saveRecipesLocally(recipes) {
+    localStorage.setItem('recipes', JSON.stringify(recipes));
+}
+
+function getRecipesLocally() {
+    const storedRecipes = localStorage.getItem('recipes');
+    return storedRecipes ? JSON.parse(storedRecipes) : [];
+}
+
+function displaySavedRecipes() {
+    const savedRecipesContainer = document.getElementById('savedRecipesContainer');
+    savedRecipesContainer.innerHTML = ''; // Clear existing content
+    const recipes = getRecipesLocally();
+    recipes.forEach((recipe, index) => {
+        const recipeDiv = document.createElement('div');
+        recipeDiv.classList.add('recipe');
+        recipeDiv.innerHTML = `
+            <h3>Recipe ${index + 1}</h3>
+            <p><strong>Name:</strong> ${recipe.recipeName}</p>
+            <p><strong>Ingredients:</strong> ${recipe.ingredients}</p>
+            <p><strong>Instructions:</strong> ${recipe.instructions}</p>
+        `;
+        savedRecipesContainer.appendChild(recipeDiv);
+    });
+}
+
+document.getElementById('addRecipe').addEventListener('click', addRecipe);
+
+document.getElementById('recipeForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const recipes = [];
+    for (let i = 1; i <= recipeCount; i++) {
+        const recipeName = document.getElementById(`recipeName${i}`).value;
+        const ingredients = document.getElementById(`ingredients${i}`).value;
+        const instructions = document.getElementById(`instructions${i}`).value;
+        recipes.push({ recipeName, ingredients, instructions });
+    }
+    saveRecipesLocally(recipes);
+    displaySavedRecipes();
+    document.getElementById('recipeForm').reset();
+    document.getElementById('recipesContainer').innerHTML = '';
+    recipeCount = 0;
+});
+
+// Display saved recipes on page load
+displaySavedRecipes();
+
+
+    </script>
+  </body>
+</html>
